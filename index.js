@@ -9,7 +9,7 @@ const app = async (req, res) => {
 
   const { path, data } = await requestParser(req)
 
-  router(path) (data, (status = 200, payload = {}) => {
+  router(path)(data, (status = 200, payload = {}) => {
     if (typeof status === 'object') {
       payload = status
       status = 200

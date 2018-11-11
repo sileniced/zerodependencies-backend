@@ -1,26 +1,44 @@
 const validator = require('../../lib/validator')
 const crud = require('../../lib/jsonCrud')
 
-module.exports = {
-  get: () => {
-  },
-  post: async (data, callback) => {
+class users {
+
+  async GET(data, callback) {
+    const errors = []
+    const errorCollector = err => {
+      errors.push(err)
+    }
+
+
+  }
+
+  async POST(data, callback) {
+
+    const errors = { 400: [], 500: [] }
+    const errorCollector = err => {
+      if (typeof(err) === 'string') errors[400].push(err)
+      else errors[500].push(err)
+    }
 
     const columns = ['firstName', 'lastName', 'email', 'password', { boolean: 'tos' }]
+    const user = validator(columns, data.payload, errorCollector)
 
-    const user = validator(columns, data.payload, console.error)
+    if (crud.exists('users', user.email, errorCollector)) errorCollector('user already exists')
+    else await crud.create('users', user.email, user, errorCollector)
 
-    const file = await crud.read('users', user.email, console.error)
+    if (errors[500].length) callback(500, errors[500])
+    else if (errors[400].length) callback(400, errors[400])
+    else callback(201, user)
 
-    if (file) callback({ error: 'user already exist' })
+  }
 
-    await crud.create('users', user.email, user, console.error)
+  PUT() {
 
-    callback(201, user)
+  }
 
-  },
-  put: () => {
-  },
-  delete: () => {
-  },
+  DELETE() {
+
+  }
 }
+
+module.exports = new users

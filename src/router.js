@@ -1,6 +1,8 @@
 const ping = require('./controllers/ping')
 const users = require('./controllers/users')
 
+
+
 const standard = {
   notFound: (data, payload) => payload(404),
   methodNotAllowed: (data, payload) => payload(405),
@@ -9,7 +11,7 @@ const standard = {
 const router = {
   ...standard,
 
-  'ping': ping.get,
+  'ping': ping.GET,
   'users': users,
 }
 
