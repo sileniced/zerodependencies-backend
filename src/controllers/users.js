@@ -10,40 +10,25 @@ class users {
   }
 
   GET(id) {
-    return async (data, callback) => {
-
-      const errs = { 400: [], 500: [] }
-      const errCatcher = err => {
-        if (typeof(err) === 'string') errs[400].push(err)
-        else errs[500].push(err)
-      }
-
-      const user = await crud.read(this.name, id, errCatcher)
-
-      if (errs[500].length) callback(500, { errs })
-      else if (errs[400].length) callback(400, { errs })
-      else callback(200, { user })
-    }
+    return async (data, err) => ({
+      status: 200,
+      payload: { user: await crud.read(this.name, id, err) },
+    })
   }
 
   POST() {
-    return async (data, callback) => {
+    return async (data, err) => {
 
-      const errs = { 400: [], 500: [] }
-      const errCatcher = err => {
-        if (typeof(err) === 'string') errs[400].push(err)
-        else errs[500].push(err)
+      const errs = []
+      const errCatcher = error => {
+        if (typeof(error) === 'string') errs.push(error)
+        err(error)
       }
 
       const user = await em.create(this.name, User, data.payload, errCatcher)
+      if (!errs.length) await em.commit(this.name, User, user, err)
 
-      if (!errs[400].length) {
-
-        await em.commit(this.name, User, user, errCatcher)
-
-        if (errs[500].length) callback(500, { errs })
-        else callback(201, { user })
-      } else callback(400, { errs })
+      return { status: 200, payload: { user } }
     }
   }
 
@@ -56,4 +41,5 @@ class users {
   }
 }
 
-module.exports = new users
+module
+  .exports = new users
