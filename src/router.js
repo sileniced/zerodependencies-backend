@@ -1,3 +1,5 @@
+const pathProps = require('../lib/pathProps')
+
 const ping = require('./controllers/ping')
 const users = require('./controllers/users')
 
@@ -11,10 +13,14 @@ const router = {
 
   'ping': ping.GET,
   'users': users,
+  'users/:id': users,
+  'foo/:fooSlug/bar/:barId': ping.PROPS,
+  'foo/ding/bar/:barId': ping.PROPS,
 }
 
-module.exports = ({ path: { base, id }, method }) => {
+module.exports = ({ path, method }) => {
+  const { base, props } = pathProps(path, router)
   const pathRoute = router[base] || router.notFound
-  if (typeof(pathRoute) === 'function') return pathRoute(id)
-  return pathRoute[method](id) || router.methodNotAllowed
+  if (typeof(pathRoute) === 'function') return pathRoute(props)
+  return pathRoute[method](props) || router.methodNotAllowed
 }

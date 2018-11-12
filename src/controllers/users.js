@@ -9,10 +9,10 @@ class users {
     this.name = 'users'
   }
 
-  GET(id) {
+  GET(props) {
     return async (data, err) => ({
       status: 200,
-      payload: { user: await crud.read(this.name, id, err) },
+      payload: { user: await crud.read(this.name, props.id, err) },
     })
   }
 
