@@ -1,7 +1,9 @@
 class ping {
 
-  GET(data, callback) {
-    callback({ 'I\'m': 'alive' })
+  GET() {
+    return async (data, callback) => {
+      callback({ 'I\'m': 'alive' })
+    }
   }
 
 }

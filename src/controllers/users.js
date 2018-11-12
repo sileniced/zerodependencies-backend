@@ -1,35 +1,47 @@
+const entity = require('../../lib/entityCreator')
 const validator = require('../../lib/validator')
-const crud = require('../../lib/jsonCrud')
+const crud = require('../../lib/jsonDriver')
+
+const { hash, compare } = require('../../lib/passwordHasher')
 
 class users {
 
-  async GET(data, callback) {
-    const errors = []
-    const errorCollector = err => {
-      errors.push(err)
+  GET(id) {
+    return async (data, callback) => {
+      const err = []
+      const errCatcher = err => {
+        err.push(err)
+      }
+      if (!id) {
+
+      }
     }
-
-
   }
 
-  async POST(data, callback) {
+  POST() {
+    return async (data, callback) => {
 
-    const errors = { 400: [], 500: [] }
-    const errorCollector = err => {
-      if (typeof(err) === 'string') errors[400].push(err)
-      else errors[500].push(err)
+      const errs = { 400: [], 500: [] }
+      const errCatcher = err => {
+        if (typeof(err) === 'string') errs[400].push(err)
+        else errs[500].push(err)
+      }
+
+      const User = ['firstName', 'lastName', 'email', 'password', { boolean: 'tos' }]
+      const valid = validator(User, data.payload, errCatcher)
+
+      if (!await crud.isUnique('users', valid.email)) errCatcher('user already exists')
+      if (!errs[400].length) {
+
+        const user = await entity.create('users', valid, errCatcher)
+        user.password = hash(user.password, errCatcher)
+        await crud.create('users', user.id, user, errCatcher)
+
+        if (errs[500].length) callback(500, { errs })
+        else callback(201, { user })
+      } else callback(400, { errs })
+
     }
-
-    const columns = ['firstName', 'lastName', 'email', 'password', { boolean: 'tos' }]
-    const user = validator(columns, data.payload, errorCollector)
-
-    if (crud.exists('users', user.email, errorCollector)) errorCollector('user already exists')
-    else await crud.create('users', user.email, user, errorCollector)
-
-    if (errors[500].length) callback(500, errors[500])
-    else if (errors[400].length) callback(400, errors[400])
-    else callback(201, user)
-
   }
 
   PUT() {
