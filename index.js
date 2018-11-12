@@ -17,7 +17,7 @@ const app = async (req, res) => {
   const response = await router(path)(data, errCatcher)
 
   const status = errs[500].length ? 500 : (errs[400].length ? 400 : response.status)
-  const payload = [400, 500].indexOf(status) > -1 ? { errs } : response.payload
+  const payload = Math.floor(status / 100) !== 2 ? { errs } : response.payload
   if (payload.user) delete payload.user.password
 
   res.setHeader('Content-Type', 'application/json')

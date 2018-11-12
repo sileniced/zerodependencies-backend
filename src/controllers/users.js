@@ -18,7 +18,6 @@ class users {
 
   POST() {
     return async (data, err) => {
-
       const errs = []
       const errCatcher = error => {
         if (typeof(error) === 'string') errs.push(error)
