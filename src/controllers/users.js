@@ -38,6 +38,7 @@ class users {
       const user = await em.create(this.name, User, data.payload, errCatcher)
 
       if (!errs[400].length) {
+
         await em.commit(this.name, User, user, errCatcher)
 
         if (errs[500].length) callback(500, { errs })

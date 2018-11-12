@@ -8,7 +8,7 @@ const router = require('./src/router')
 const app = async (req, res) => {
   const { path, data } = await requestParser(req)
 
-  router(path)(data, (status = 200, payload = {}) => {
+  const callbackHandler = (status = 200, payload = {}) => {
     if (typeof status === 'object') {
       payload = status
       status = 200
@@ -19,7 +19,9 @@ const app = async (req, res) => {
     res.setHeader('Content-Type', 'application/json')
     res.writeHead(status)
     res.end(JSON.stringify(payload))
-  })
+  }
+
+  router(path)(data, callbackHandler)
 }
 
 require('./lib/jsonDriver').init(['users'])
