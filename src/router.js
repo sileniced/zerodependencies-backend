@@ -19,7 +19,7 @@ const router = {
 }
 
 module.exports = ({ path, method }) => {
-  const { base, props } = pathProps(path, router)
+  const { base, props } = pathProps(path, Object.keys(router))
   const pathRoute = router[base] || router.notFound
   if (typeof(pathRoute) === 'function') return pathRoute(props)
   return pathRoute[method](props) || router.methodNotAllowed
